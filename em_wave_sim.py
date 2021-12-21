@@ -16,13 +16,13 @@ dz = 0.04
 dt = 7e-11
 
 # 計算範囲
-x_min = -0.5
-y_min = -0.5
-z_min = -0.5
-x_max = 0.5
-y_max = 0.5
-z_max = 0.5
-t_max = 1 / freq * 1
+x_min = -0.6
+y_min = -0.6
+z_min = -0.6
+x_max = 0.6
+y_max = 0.6
+z_max = 0.6
+t_max = 1 / freq * 5
 
 # 電荷分布
 def q_func(t, x, y, z):
@@ -48,7 +48,6 @@ with tqdm(total=len(calculator)) as progress_bar:
   def init():
     pass
 
-  #for frame_num in range(len(calculator)):
   def plot(frame_num):
     coords, E, B, J = next(calculator)
     x, y, z = coords[..., X], coords[..., Y], coords[..., Z]

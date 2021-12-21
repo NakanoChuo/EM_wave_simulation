@@ -85,9 +85,9 @@ class Grid():
     self.dz = z_slice.step
 
     # Collocated座標（通常の座標）
-    x = np.arange(x_slice.start - x_slice.step, x_slice.stop + x_slice.step, x_slice.step)  # 計算用に少し幅を持たせて計算する
-    y = np.arange(y_slice.start - y_slice.step, y_slice.stop + y_slice.step, y_slice.step)
-    z = np.arange(z_slice.start - z_slice.step, z_slice.stop + z_slice.step, z_slice.step)
+    x = np.arange(x_slice.start - x_slice.step, x_slice.stop + 2 * x_slice.step, x_slice.step)  # 計算用に少し幅を持たせて計算する
+    y = np.arange(y_slice.start - y_slice.step, y_slice.stop + 2 * y_slice.step, y_slice.step)
+    z = np.arange(z_slice.start - z_slice.step, z_slice.stop + 2 * z_slice.step, z_slice.step)
     x, y, z = np.meshgrid(x, y, z, indexing='ij')
     self.calc_coords = np.concatenate((x[..., np.newaxis], y[..., np.newaxis], z[..., np.newaxis]), axis=-1)
 
