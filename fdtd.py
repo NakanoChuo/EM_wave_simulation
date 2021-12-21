@@ -36,7 +36,7 @@ def curl_B(B, dx, dy, dz):
 def calculate_static_E(q_func, eps, E_coords):
   E = np.zeros_like(E_coords)
   q_dist = q_func(E_coords[..., X], E_coords[..., Y], E_coords[..., Z])
-  for idx, _ in tqdm(np.ndenumerate(E[..., X])):
+  for idx, _ in tqdm(list(np.ndenumerate(E[..., X]))):
     # 各点pの電場を求める
     p = E_coords[idx]
     r = p - E_coords
