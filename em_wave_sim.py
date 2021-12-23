@@ -41,10 +41,12 @@ calculator = Calculator(
 import matplotlib.pyplot as plt
 import matplotlib.animation as anime
 
-fig1 = plt.figure(dpi=200)
-ax_E = fig1.add_subplot(221, projection='3d')
-ax_B = fig1.add_subplot(222, projection='3d')
-ax_J = fig1.add_subplot(223, projection='3d')
+fig = plt.figure(dpi=200)
+ax_E = fig.add_subplot(3, 4, 1, projection='3d')
+ax_B = fig.add_subplot(3, 4, 2, projection='3d')
+ax_J = fig.add_subplot(3, 4, 3, projection='3d')
+ax1 = fig.add_subplot(3, 4, (5, 10), projection='3d')
+ax2 = fig.add_subplot(3, 4, (7, 12), projection='3d')
 
 with tqdm(total=len(calculator)) as progress_bar:
   def init():
@@ -53,6 +55,7 @@ with tqdm(total=len(calculator)) as progress_bar:
   def plot(frame_num):
     coords, E, B, J = next(calculator)
     x, y, z = coords[..., X], coords[..., Y], coords[..., Z]
+    x_size, _, z_size, _ = coords.shape
 
     B *= LIGHT_SPEED
     J *= 10
@@ -64,7 +67,17 @@ with tqdm(total=len(calculator)) as progress_bar:
     ax_J.clear(); ax_J.set_xlim(x_min, x_max); ax_J.set_ylim(y_min, y_max); ax_J.set_zlim(z_min, z_max)
     ax_J.quiver(x[::3, ::3, ::3], y[::3, ::3, ::3], z[::3, ::3, ::3], J[::3, ::3, ::3, X], J[::3, ::3, ::3, Y], J[::3, ::3, ::3, Z], color='C3')
 
+    ax1.clear(); ax1.set_xlim(x_min, x_max); ax1.set_ylim(y_min, y_max); ax1.set_zlim(z_min, z_max)
+    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], E[::3, ::3, z_size // 2, X], E[::3, ::3, z_size // 2, Y], E[::3, ::3, z_size // 2, Z], color='C2')
+    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], B[::3, ::3, z_size // 2, X], B[::3, ::3, z_size // 2, Y], B[::3, ::3, z_size // 2, Z], color='C1')
+    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], J[::3, ::3, z_size // 2, X], J[::3, ::3, z_size // 2, Y], J[::3, ::3, z_size // 2, Z], color='C3')
+
+    ax2.clear(); ax2.set_xlim(x_min, x_max); ax2.set_ylim(y_min, y_max); ax2.set_zlim(z_min, z_max)
+    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], E[x_size // 2, ::3, ::3, X], E[x_size // 2, ::3, ::3, Y], E[x_size // 2, ::3, ::3, Z], color='C2')
+    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], B[x_size // 2, ::3, ::3, X], B[x_size // 2, ::3, ::3, Y], B[x_size // 2, ::3, ::3, Z], color='C1')
+    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], J[x_size // 2, ::3, ::3, X], J[x_size // 2, ::3, ::3, Y], J[x_size // 2, ::3, ::3, Z], color='C3')
+
     progress_bar.update()
     
-  animation = anime.FuncAnimation(fig1, plot, interval=1, frames=len(calculator), init_func=init)
+  animation = anime.FuncAnimation(fig, plot, interval=1, frames=len(calculator), init_func=init)
   animation.save('output.gif', writer='imagemagick')
