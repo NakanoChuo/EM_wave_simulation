@@ -32,19 +32,6 @@ def curl_B(B, dx, dy, dz):
   curl[:, 1:, :, 2] -= (B[:, 1:, :, 0] - B[:, :-1, :, 0]) / dy
   return curl
 
-# 静電場計算
-def calculate_static_E(q_func, eps, E_coords):
-  E = np.zeros_like(E_coords)
-  q_dist = q_func(E_coords[..., X], E_coords[..., Y], E_coords[..., Z])
-  for idx, _ in tqdm(list(np.ndenumerate(E[..., X]))):
-    # 各点pの電場を求める
-    p = E_coords[idx]
-    r = p - E_coords
-    e = q_dist[..., np.newaxis] / (4 * np.pi * eps) * r / (np.linalg.norm(r) ** 3)
-    e = np.sum(e, axis=tuple(range(e.ndim - 1)))
-    E[idx] = e
-  return E
-
 # CollocatedグリッドからYeeグリッドへの変換
 def convert_E_coll_to_yee(x, y, z):
   return np.concatenate((
@@ -149,8 +136,8 @@ class Grid():
     self.eps = VACUUM_PERMITTIVITY * relative_permittivity
     self.mu = VACUUM_PERMEABILITY * relative_permeavility 
  
-  def initialize(self, q_func, J_func): # q_func(x, y, z), J_func(x, y, z)
-    self.old_E = calculate_static_E(q_func, self.eps, self.E_yee_coords)
+  def initialize(self, J_func): # J_func(x, y, z)
+    self.old_E = np.zeros_like(self.E_yee_coords)
     self.old_B = np.zeros_like(self.B_yee_coords)
     self.old_J = J_func(self.J_yee_coords[..., X], self.J_yee_coords[..., Y], self.J_yee_coords[..., Z])
 
@@ -187,7 +174,6 @@ class Calculator():
     self.dt = dt
     assert all(LIGHT_SPEED * dt <= d / np.sqrt(DIM) for d in [self.grid.dx, self.grid.dy, self.grid.dz])
     self.t_size = int(t_stop / dt)
-    self.q_func = lambda x, y, z: q_func(0, x, y, z)
     self.J_func = lambda x, y, z: q_func(self.t_idx * dt + dt / 2, x, y, z)[..., np.newaxis] * q_vel_func(self.t_idx * dt + dt / 2, x, y, z)
     self.__iter__()
     
@@ -196,7 +182,7 @@ class Calculator():
   
   def __iter__(self):
     self.t_idx = 0
-    self.grid.initialize(self.q_func, self.J_func)
+    self.grid.initialize(self.J_func)
     return self
 
   def __next__(self):
