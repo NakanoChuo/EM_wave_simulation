@@ -180,4 +180,8 @@ class Calculator():
     self.grid.update_border(self.dt)
     self.grid.calc_coll()
     self.t_idx += 1
-    return self.grid.coords, self.grid.E_coll, self.grid.B_coll, self.grid.J_coll
+    return \
+      np.array(self.grid.coords), \
+      np.array(self.grid.E_coll), \
+      np.array(self.grid.B_coll), \
+      np.array(self.grid.J_coll)
