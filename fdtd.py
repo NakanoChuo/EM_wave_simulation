@@ -169,12 +169,12 @@ class Grid():
 
 
 class Calculator():
-  def __init__(self, grid, dt, t_stop, q_func, q_vel_func):
+  def __init__(self, grid, dt, t_stop, J_func):
     self.grid = grid
     self.dt = dt
     assert all(LIGHT_SPEED * dt <= d / np.sqrt(DIM) for d in [self.grid.dx, self.grid.dy, self.grid.dz])
     self.t_size = int(t_stop / dt)
-    self.J_func = lambda x, y, z: q_func(self.t_idx * dt + dt / 2, x, y, z)[..., np.newaxis] * q_vel_func(self.t_idx * dt + dt / 2, x, y, z)
+    self.J_func = lambda x, y, z: J_func(self.t_idx * dt + dt / 2, x, y, z)
     self.__iter__()
     
   def __len__(self):

@@ -24,18 +24,21 @@ y_max = 0.6
 z_max = 0.6
 t_max = 1 / freq * 2
 
-# 電荷分布
-def q_func(t, x, y, z):
-  q_center_pos = np.array([0, 0, amp * np.sin(2 * np.pi * freq * t)])
-  return q * np.exp(-((x - q_center_pos[X]) ** 2) / 0.01) * np.exp(-((y - q_center_pos[Y]) ** 2) / 0.01) * np.exp(-((z - q_center_pos[Z]) ** 2) / 0.01)
+# 電気双極子の電流密度
+def dipole_J_func(t, x, y, z):
+  # +電荷の分布
+  pos = np.array([0, 0, amp * np.sin(2 * np.pi * freq * t)])  # 分布の中心位置
+  p_dist = np.exp(-((x - pos[X]) ** 2) / 0.01) * np.exp(-((y - pos[Y]) ** 2) / 0.01) * np.exp(-((z - pos[Z]) ** 2) / 0.01)
+  # -電荷の分布
+  n_dist = np.exp(-((-x - pos[X]) ** 2) / 0.01) * np.exp(-((-y - pos[Y]) ** 2) / 0.01) * np.exp(-((-z - pos[Z]) ** 2) / 0.01)
+  # 電荷の速度
+  q_vel = np.array([0, 0, 2 * np.pi * freq * amp * np.cos(2 * np.pi * freq * t)])
 
-# 電荷の速度
-def q_vel_func(t, x, y, z):
-  return np.array([0, 0, 2 * np.pi * freq * amp * np.cos(2 * np.pi * freq * t)])
+  return q * p_dist[..., np.newaxis] * q_vel + (-q) * n_dist[..., np.newaxis] * -q_vel
 
 calculator = Calculator(
   Grid(slice(x_min, x_max, dx), slice(y_min, y_max, dy), slice(z_min, z_max, dz)),
-  dt, t_max, q_func, q_vel_func
+  dt, t_max, dipole_J_func
 )
 
 import matplotlib.pyplot as plt
@@ -70,6 +73,5 @@ with tqdm(total=len(calculator)) as progress_bar:
 
     progress_bar.update()
     
-  # animation = anime.FuncAnimation(fig, plot, interval=1, frames=1, init_func=init)
   animation = anime.FuncAnimation(fig, plot, interval=1, frames=len(calculator), init_func=init)
   animation.save('output.gif', writer='imagemagick')
