@@ -41,12 +41,10 @@ calculator = Calculator(
 import matplotlib.pyplot as plt
 import matplotlib.animation as anime
 
-fig = plt.figure(dpi=200)
-ax_E = fig.add_subplot(3, 4, 1, projection='3d')
-ax_B = fig.add_subplot(3, 4, 2, projection='3d')
-ax_J = fig.add_subplot(3, 4, 3, projection='3d')
-ax1 = fig.add_subplot(3, 4, (5, 10), projection='3d')
-ax2 = fig.add_subplot(3, 4, (7, 12), projection='3d')
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+ax2 = fig.add_subplot(1, 2, 2, projection='3d')
+ax2.view_init(elev=20, azim=-10)
 
 with tqdm(total=len(calculator)) as progress_bar:
   def init():
@@ -60,13 +58,6 @@ with tqdm(total=len(calculator)) as progress_bar:
     B *= LIGHT_SPEED
     J *= 10
 
-    ax_E.clear(); ax_E.set_xlim(x_min, x_max); ax_E.set_ylim(y_min, y_max); ax_E.set_zlim(z_min, z_max)
-    ax_E.quiver(x[::3, ::3, ::3], y[::3, ::3, ::3], z[::3, ::3, ::3], E[::3, ::3, ::3, X], E[::3, ::3, ::3, Y], E[::3, ::3, ::3, Z], color='C2')
-    ax_B.clear(); ax_B.set_xlim(x_min, x_max); ax_B.set_ylim(y_min, y_max); ax_B.set_zlim(z_min, z_max)
-    ax_B.quiver(x[::3, ::3, ::3], y[::3, ::3, ::3], z[::3, ::3, ::3], B[::3, ::3, ::3, X], B[::3, ::3, ::3, Y], B[::3, ::3, ::3, Z], color='C1')
-    ax_J.clear(); ax_J.set_xlim(x_min, x_max); ax_J.set_ylim(y_min, y_max); ax_J.set_zlim(z_min, z_max)
-    ax_J.quiver(x[::3, ::3, ::3], y[::3, ::3, ::3], z[::3, ::3, ::3], J[::3, ::3, ::3, X], J[::3, ::3, ::3, Y], J[::3, ::3, ::3, Z], color='C3')
-
     ax1.clear(); ax1.set_xlim(x_min, x_max); ax1.set_ylim(y_min, y_max); ax1.set_zlim(z_min, z_max)
     ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], E[::3, ::3, z_size // 2, X], E[::3, ::3, z_size // 2, Y], E[::3, ::3, z_size // 2, Z], color='C2')
     ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], B[::3, ::3, z_size // 2, X], B[::3, ::3, z_size // 2, Y], B[::3, ::3, z_size // 2, Z], color='C1')
@@ -79,5 +70,6 @@ with tqdm(total=len(calculator)) as progress_bar:
 
     progress_bar.update()
     
+  # animation = anime.FuncAnimation(fig, plot, interval=1, frames=1, init_func=init)
   animation = anime.FuncAnimation(fig, plot, interval=1, frames=len(calculator), init_func=init)
   animation.save('output.gif', writer='imagemagick')
