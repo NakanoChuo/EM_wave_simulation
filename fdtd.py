@@ -45,26 +45,48 @@ def calculate_static_E(q_func, eps, E_coords):
     E[idx] = e
   return E
 
-# CollocatedグリッドとYeeグリッドの相互変換
-def convert_E_coll_and_yee(x, y, z):
+# CollocatedグリッドからYeeグリッドへの変換
+def convert_E_coll_to_yee(x, y, z):
   return np.concatenate((
     (x[:-1, :-1, :-1, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
     (y[:-1, :-1, :-1, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
     (z[:-1, :-1, :-1, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_B_coll_and_yee(x, y, z):
+def convert_B_coll_to_yee(x, y, z):
   return np.concatenate((
     (x[:-1, :-1, :-1, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
     (y[:-1, :-1, :-1, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
     (z[:-1, :-1, :-1, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_J_coll_and_yee(x, y, z):
+def convert_J_coll_to_yee(x, y, z):
   return np.concatenate((
     (x[:-1, :-1, :-1, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
     (y[:-1, :-1, :-1, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
     (z[:-1, :-1, :-1, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
+  ), axis=-1)
+
+# YeeグリッドからCollocatedグリッドへの変換
+def convert_E_yee_to_coll(x, y, z):
+  return np.concatenate((
+    (x[1:, 1:, 1:, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
+    (y[1:, 1:, 1:, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
+    (z[1:, 1:, 1:, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
+  ), axis=-1)
+
+def convert_B_yee_to_coll(x, y, z):
+  return np.concatenate((
+    (x[1:, 1:, 1:, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
+    (y[1:, 1:, 1:, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
+    (z[1:, 1:, 1:, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
+  ), axis=-1)
+
+def convert_J_yee_to_coll(x, y, z):
+  return np.concatenate((
+    (x[1:, 1:, 1:, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
+    (y[1:, 1:, 1:, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
+    (z[1:, 1:, 1:, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
   ), axis=-1)
 
 
@@ -75,26 +97,30 @@ class Grid():
   ):
     assert all(isinstance(s, slice) for s in [x_slice, y_slice, z_slice])
     # 計算範囲
-    self.x_slice = x_slice  # x_slice.startからstopまで計算
-    self.y_slice = y_slice
-    self.z_slice = z_slice
-
-    # 離散化幅
-    self.dx = x_slice.step
-    self.dy = y_slice.step
-    self.dz = z_slice.step
+    x_start = x_slice.start - x_slice.step  # 計算用に少し幅を持たせて計算する
+    y_start = y_slice.start - y_slice.step
+    z_start = z_slice.start - z_slice.step
+    x_stop = x_slice.stop + x_slice.step
+    y_stop = y_slice.stop + y_slice.step
+    z_stop = z_slice.stop + z_slice.step
+    x_size = int((x_stop - x_start) / x_slice.step) + 1
+    y_size = int((y_stop - y_start) / y_slice.step) + 1
+    z_size = int((z_stop - z_start) / z_slice.step) + 1
 
     # Collocated座標（通常の座標）
-    x = np.arange(x_slice.start - x_slice.step, x_slice.stop + 2 * x_slice.step, x_slice.step)  # 計算用に少し幅を持たせて計算する
-    y = np.arange(y_slice.start - y_slice.step, y_slice.stop + 2 * y_slice.step, y_slice.step)
-    z = np.arange(z_slice.start - z_slice.step, z_slice.stop + 2 * z_slice.step, z_slice.step)
+    x = np.linspace(x_start, x_stop, x_size)
+    y = np.linspace(y_start, y_stop, y_size)
+    z = np.linspace(z_start, z_stop, z_size)
+    self.dx = x[1] - x[0]
+    self.dy = y[1] - y[0]
+    self.dz = z[1] - z[0]
     x, y, z = np.meshgrid(x, y, z, indexing='ij')
     self.calc_coords = np.concatenate((x[..., np.newaxis], y[..., np.newaxis], z[..., np.newaxis]), axis=-1)
 
     # Yee座標
-    self.E_yee_coords = convert_E_coll_and_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電場のYeeグリッドの各ベクトルの座標
-    self.B_yee_coords = convert_B_coll_and_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 磁場
-    self.J_yee_coords = convert_J_coll_and_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電流密度
+    self.E_yee_coords = convert_E_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電場のYeeグリッドの各ベクトルの座標
+    self.B_yee_coords = convert_B_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 磁場
+    self.J_yee_coords = convert_J_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電流密度
 
     # 有効な値を計算できる座標
     self.coords = self.calc_coords[1:-1, 1:-1, 1:-1]
@@ -147,9 +173,9 @@ class Grid():
     E = self.old_E
     B = (self.B_yee + self.old_B) / 2
     J = (self.J_yee + self.old_J) / 2
-    self.E_coll = convert_E_coll_and_yee(E[..., X], E[..., Y], E[..., Z])
-    self.B_coll = convert_B_coll_and_yee(B[..., X], B[..., Y], B[..., Z])
-    self.J_coll = convert_J_coll_and_yee(J[..., X], J[..., Y], J[..., Z])
+    self.E_coll = convert_E_yee_to_coll(E[..., X], E[..., Y], E[..., Z])
+    self.B_coll = convert_B_yee_to_coll(B[..., X], B[..., Y], B[..., Z])
+    self.J_coll = convert_J_yee_to_coll(J[..., X], J[..., Y], J[..., Z])
     self.old_E = self.E_yee
     self.old_B = self.B_yee
     self.old_J = self.J_yee
