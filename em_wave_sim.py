@@ -61,12 +61,18 @@ with tqdm(total=len(calculator)) as progress_bar:
     B *= LIGHT_SPEED
     J *= 10
 
-    ax1.clear(); ax1.set_xlim(x_min, x_max); ax1.set_ylim(y_min, y_max); ax1.set_zlim(z_min, z_max)
+    ax1.clear()
+    ax1.set_xlim(x_min, x_max); ax1.set_ylim(y_min, y_max); ax1.set_zlim(z_min, z_max)
+    ax1.set_xticks([x_min, x_max]); ax1.set_yticks([y_min, y_max]); ax1.set_zticks([0])
+    ax1.plot([x_min, x_max, x_max], [y_min, y_min, y_max], [0, 0, 0], linewidth=1, color='darkgray')
     ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], E[::3, ::3, z_size // 2, X], E[::3, ::3, z_size // 2, Y], E[::3, ::3, z_size // 2, Z], color='C2')
     ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], B[::3, ::3, z_size // 2, X], B[::3, ::3, z_size // 2, Y], B[::3, ::3, z_size // 2, Z], color='C1')
     ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], J[::3, ::3, z_size // 2, X], J[::3, ::3, z_size // 2, Y], J[::3, ::3, z_size // 2, Z], color='C3')
 
-    ax2.clear(); ax2.set_xlim(x_min, x_max); ax2.set_ylim(y_min, y_max); ax2.set_zlim(z_min, z_max)
+    ax2.clear()
+    ax2.set_xlim(x_min, x_max); ax2.set_ylim(y_min, y_max); ax2.set_zlim(z_min, z_max)
+    ax2.set_xticks([0]); ax2.set_yticks([y_min, y_max]); ax2.set_zticks([z_min, z_max])
+    ax2.plot([0, 0, 0], [y_min, y_min, y_max], [z_min, z_max, z_max], linewidth=1, color='darkgray')
     ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], E[x_size // 2, ::3, ::3, X], E[x_size // 2, ::3, ::3, Y], E[x_size // 2, ::3, ::3, Z], color='C2')
     ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], B[x_size // 2, ::3, ::3, X], B[x_size // 2, ::3, ::3, Y], B[x_size // 2, ::3, ::3, Z], color='C1')
     ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], J[x_size // 2, ::3, ::3, X], J[x_size // 2, ::3, ::3, Y], J[x_size // 2, ::3, ::3, Z], color='C3')
