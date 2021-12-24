@@ -22,7 +22,7 @@ z_min = -0.6
 x_max = 0.6
 y_max = 0.6
 z_max = 0.6
-t_max = 1 / freq * 2
+t_max = 1 / freq * 5
 
 # 電気双極子の電流密度
 def dipole_J_func(t, x, y, z):
@@ -44,7 +44,7 @@ calculator = Calculator(
 import matplotlib.pyplot as plt
 import matplotlib.animation as anime
 
-fig = plt.figure()
+fig = plt.figure(dpi=200)
 ax1 = fig.add_subplot(1, 2, 1, projection='3d')
 ax2 = fig.add_subplot(1, 2, 2, projection='3d')
 ax2.view_init(elev=20, azim=-10)
@@ -65,17 +65,18 @@ with tqdm(total=len(calculator)) as progress_bar:
     ax1.set_xlim(x_min, x_max); ax1.set_ylim(y_min, y_max); ax1.set_zlim(z_min, z_max)
     ax1.set_xticks([x_min, x_max]); ax1.set_yticks([y_min, y_max]); ax1.set_zticks([0])
     ax1.plot([x_min, x_max, x_max], [y_min, y_min, y_max], [0, 0, 0], linewidth=1, color='darkgray')
-    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], E[::3, ::3, z_size // 2, X], E[::3, ::3, z_size // 2, Y], E[::3, ::3, z_size // 2, Z], color='C2')
-    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], B[::3, ::3, z_size // 2, X], B[::3, ::3, z_size // 2, Y], B[::3, ::3, z_size // 2, Z], color='C1')
-    ax1.quiver(x[::3, ::3, z_size // 2], y[::3, ::3, z_size // 2], z[::3, ::3, z_size // 2], J[::3, ::3, z_size // 2, X], J[::3, ::3, z_size // 2, Y], J[::3, ::3, z_size // 2, Z], color='C3')
+    ax1.quiver(x[::2, ::2, z_size // 2], y[::2, ::2, z_size // 2], z[::2, ::2, z_size // 2], E[::2, ::2, z_size // 2, X], E[::2, ::2, z_size // 2, Y], E[::2, ::2, z_size // 2, Z], color='red', linewidth=0.5)
+    ax1.quiver(x[::2, ::2, z_size // 2], y[::2, ::2, z_size // 2], z[::2, ::2, z_size // 2], B[::2, ::2, z_size // 2, X], B[::2, ::2, z_size // 2, Y], B[::2, ::2, z_size // 2, Z], color='green', linewidth=0.5)
+    ax1.quiver(x[::2, ::2, z_size // 2], y[::2, ::2, z_size // 2], z[::2, ::2, z_size // 2], J[::2, ::2, z_size // 2, X], J[::2, ::2, z_size // 2, Y], J[::2, ::2, z_size // 2, Z], color='blue', linewidth=0.5)
 
     ax2.clear()
     ax2.set_xlim(x_min, x_max); ax2.set_ylim(y_min, y_max); ax2.set_zlim(z_min, z_max)
     ax2.set_xticks([0]); ax2.set_yticks([y_min, y_max]); ax2.set_zticks([z_min, z_max])
     ax2.plot([0, 0, 0], [y_min, y_min, y_max], [z_min, z_max, z_max], linewidth=1, color='darkgray')
-    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], E[x_size // 2, ::3, ::3, X], E[x_size // 2, ::3, ::3, Y], E[x_size // 2, ::3, ::3, Z], color='C2')
-    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], B[x_size // 2, ::3, ::3, X], B[x_size // 2, ::3, ::3, Y], B[x_size // 2, ::3, ::3, Z], color='C1')
-    ax2.quiver(x[x_size // 2, ::3, ::3], y[x_size // 2, ::3, ::3], z[x_size // 2, ::3, ::3], J[x_size // 2, ::3, ::3, X], J[x_size // 2, ::3, ::3, Y], J[x_size // 2, ::3, ::3, Z], color='C3')
+    ax2.quiver(x[x_size // 2, ::2, ::2], y[x_size // 2, ::2, ::2], z[x_size // 2, ::2, ::2], E[x_size // 2, ::2, ::2, X], E[x_size // 2, ::2, ::2, Y], E[x_size // 2, ::2, ::2, Z], color='red', linewidth=0.5, label='E')
+    ax2.quiver(x[x_size // 2, ::2, ::2], y[x_size // 2, ::2, ::2], z[x_size // 2, ::2, ::2], B[x_size // 2, ::2, ::2, X], B[x_size // 2, ::2, ::2, Y], B[x_size // 2, ::2, ::2, Z], color='green', linewidth=0.5, label='B')
+    ax2.quiver(x[x_size // 2, ::2, ::2], y[x_size // 2, ::2, ::2], z[x_size // 2, ::2, ::2], J[x_size // 2, ::2, ::2, X], J[x_size // 2, ::2, ::2, Y], J[x_size // 2, ::2, ::2, Z], color='blue', linewidth=0.5, label='J')
+    ax2.legend(loc=(0.8, -0.3))
 
     progress_bar.update()
     
