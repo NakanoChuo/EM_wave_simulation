@@ -33,47 +33,47 @@ def curl_B(B, dx, dy, dz):
   return curl
 
 # CollocatedグリッドからYeeグリッドへの変換
-def convert_E_coll_to_yee(x, y, z):
+def convert_E_coll_to_yee(coll_array):
   return np.concatenate((
-    (x[:-1, :-1, :-1, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
-    (y[:-1, :-1, :-1, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
-    (z[:-1, :-1, :-1, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, X, np.newaxis] + coll_array[1:, :-1, :-1, X, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Y, np.newaxis] + coll_array[:-1, 1:, :-1, Y, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Z, np.newaxis] + coll_array[:-1, :-1, 1:, Z, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_B_coll_to_yee(x, y, z):
+def convert_B_coll_to_yee(coll_array):
   return np.concatenate((
-    (x[:-1, :-1, :-1, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
-    (y[:-1, :-1, :-1, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
-    (z[:-1, :-1, :-1, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, X, np.newaxis] + coll_array[:-1, 1:, 1:, X, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Y, np.newaxis] + coll_array[1:, :-1, 1:, Y, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Z, np.newaxis] + coll_array[1:, 1:, :-1, Z, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_J_coll_to_yee(x, y, z):
+def convert_J_coll_to_yee(coll_array):
   return np.concatenate((
-    (x[:-1, :-1, :-1, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
-    (y[:-1, :-1, :-1, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
-    (z[:-1, :-1, :-1, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, X, np.newaxis] + coll_array[1:, :-1, :-1, X, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Y, np.newaxis] + coll_array[:-1, 1:, :-1, Y, np.newaxis]) / 2,
+    (coll_array[:-1, :-1, :-1, Z, np.newaxis] + coll_array[:-1, :-1, 1:, Z, np.newaxis]) / 2,
   ), axis=-1)
 
 # YeeグリッドからCollocatedグリッドへの変換
-def convert_E_yee_to_coll(x, y, z):
+def convert_E_yee_to_coll(yee_array):
   return np.concatenate((
-    (x[1:, 1:, 1:, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
-    (y[1:, 1:, 1:, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
-    (z[1:, 1:, 1:, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, X, np.newaxis] + yee_array[:-1, 1:, 1:, X, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Y, np.newaxis] + yee_array[1:, :-1, 1:, Y, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Z, np.newaxis] + yee_array[1:, 1:, :-1, Z, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_B_yee_to_coll(x, y, z):
+def convert_B_yee_to_coll(yee_array):
   return np.concatenate((
-    (x[1:, 1:, 1:, np.newaxis] + x[1:, :-1, :-1, np.newaxis]) / 2,
-    (y[1:, 1:, 1:, np.newaxis] + y[:-1, 1:, :-1, np.newaxis]) / 2,
-    (z[1:, 1:, 1:, np.newaxis] + z[:-1, :-1, 1:, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, X, np.newaxis] + yee_array[1:, :-1, :-1, X, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Y, np.newaxis] + yee_array[:-1, 1:, :-1, Y, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Z, np.newaxis] + yee_array[:-1, :-1, 1:, Z, np.newaxis]) / 2,
   ), axis=-1)
 
-def convert_J_yee_to_coll(x, y, z):
+def convert_J_yee_to_coll(yee_array):
   return np.concatenate((
-    (x[1:, 1:, 1:, np.newaxis] + x[:-1, 1:, 1:, np.newaxis]) / 2,
-    (y[1:, 1:, 1:, np.newaxis] + y[1:, :-1, 1:, np.newaxis]) / 2,
-    (z[1:, 1:, 1:, np.newaxis] + z[1:, 1:, :-1, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, X, np.newaxis] + yee_array[:-1, 1:, 1:, X, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Y, np.newaxis] + yee_array[1:, :-1, 1:, Y, np.newaxis]) / 2,
+    (yee_array[1:, 1:, 1:, Z, np.newaxis] + yee_array[1:, 1:, :-1, Z, np.newaxis]) / 2,
   ), axis=-1)
 
 
@@ -104,21 +104,16 @@ class Grid():
     x, y, z = np.meshgrid(x, y, z, indexing='ij')
     self.calc_coords = np.concatenate((x[..., np.newaxis], y[..., np.newaxis], z[..., np.newaxis]), axis=-1)
 
-    # Yee座標
-    self.E_yee_coords = convert_E_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電場のYeeグリッドの各ベクトルの座標
-    self.B_yee_coords = convert_B_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 磁場
-    self.J_yee_coords = convert_J_coll_to_yee(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]) # 電流密度
-
     # 有効な値を計算できる座標
     self.coords = self.calc_coords[1:-1, 1:-1, 1:-1]
 
-    assert self.E_yee_coords.shape == self.B_yee_coords.shape == self.J_yee_coords.shape
-    sizes = self.E_yee_coords.shape[:-1]
+    # Yee座標
+    self.yee_grid_size = [s - 1 for s in self.calc_coords.shape[:-1]]
 
     # 境界上のインデックス（境界条件計算用）
     self.border_idx = [[], [], []]
-    for idx_tuple in product(*(range(size) for size in sizes)):
-      if any(idx == 0 or idx == size - 1 for idx, size in zip(idx_tuple, sizes)):
+    for idx_tuple in product(*(range(size) for size in self.yee_grid_size)):
+      if any(idx == 0 or idx == size - 1 for idx, size in zip(idx_tuple, self.yee_grid_size)):
         for axis in range(DIM):
           self.border_idx[axis].append(idx_tuple[axis])
     self.border_idx = tuple(self.border_idx)
@@ -127,7 +122,7 @@ class Grid():
     self.inner_idx = [[], [], []]
     for idx_tuple in zip(*self.border_idx):
       idx_tuple = np.array(idx_tuple)
-      idx_tuple += (idx_tuple == 0).astype(int) - (idx_tuple == np.array(sizes) - 1).astype(int)
+      idx_tuple += (idx_tuple == 0).astype(int) - (idx_tuple == np.array(self.yee_grid_size) - 1).astype(int)
       for axis in range(DIM):
         self.inner_idx[axis].append(idx_tuple[axis])
     self.inner_idx = tuple(self.inner_idx)
@@ -137,22 +132,21 @@ class Grid():
     self.mu = VACUUM_PERMEABILITY * relative_permeavility 
  
   def initialize(self, J_func): # J_func(x, y, z)
-    self.old_E = np.zeros_like(self.E_yee_coords)
-    self.old_B = np.zeros_like(self.B_yee_coords)
-    self.old_J = J_func(self.J_yee_coords[..., X], self.J_yee_coords[..., Y], self.J_yee_coords[..., Z])
+    self.old_E = np.zeros(self.yee_grid_size + [DIM])
+    self.old_B = np.zeros(self.yee_grid_size + [DIM])
+    self.old_J = convert_J_coll_to_yee(J_func(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]))
 
   def update(self, dt, J_func):
-    self.J_yee = J_func(self.J_yee_coords[..., X], self.J_yee_coords[..., Y], self.J_yee_coords[..., Z])
+    self.J_yee = convert_J_coll_to_yee(J_func(self.calc_coords[..., X], self.calc_coords[..., Y], self.calc_coords[..., Z]))
     curl = curl_E(self.old_E, self.dx, self.dy, self.dz)
     self.B_yee = self.old_B - dt * curl
     curl = curl_B(self.B_yee, self.dx, self.dy, self.dz)
     self.E_yee = self.old_E + dt / (self.eps * self.mu) * curl - dt / self.eps * self.J_yee
 
   def update_border(self, dt):
-    dis = np.linalg.norm(self.E_yee_coords[self.border_idx] - self.E_yee_coords[self.inner_idx])
+    dis = np.linalg.norm((np.array(self.border_idx) - np.array(self.inner_idx)) * np.array([self.dx, self.dy, self.dz])[..., np.newaxis], axis=0)[..., np.newaxis]
     self.E_yee[self.border_idx] = self.old_E[self.inner_idx] + \
       (dt * LIGHT_SPEED - dis) / (dt * LIGHT_SPEED + dis) * (self.E_yee[self.inner_idx] - self.old_E[self.border_idx])
-    dis = np.linalg.norm(self.B_yee_coords[self.border_idx] - self.B_yee_coords[self.inner_idx])
     self.B_yee[self.border_idx] = self.old_B[self.inner_idx] + \
       (dt * LIGHT_SPEED - dis) / (dt * LIGHT_SPEED + dis) * (self.B_yee[self.inner_idx] - self.old_B[self.border_idx])
   
@@ -160,9 +154,9 @@ class Grid():
     E = self.old_E
     B = (self.B_yee + self.old_B) / 2
     J = (self.J_yee + self.old_J) / 2
-    self.E_coll = convert_E_yee_to_coll(E[..., X], E[..., Y], E[..., Z])
-    self.B_coll = convert_B_yee_to_coll(B[..., X], B[..., Y], B[..., Z])
-    self.J_coll = convert_J_yee_to_coll(J[..., X], J[..., Y], J[..., Z])
+    self.E_coll = convert_E_yee_to_coll(E)
+    self.B_coll = convert_B_yee_to_coll(B)
+    self.J_coll = convert_J_yee_to_coll(J)
     self.old_E = self.E_yee
     self.old_B = self.B_yee
     self.old_J = self.J_yee
